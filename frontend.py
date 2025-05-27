@@ -29,7 +29,6 @@ if st.button("Add Plant"):
 # 📊 View plants and their data
 st.header("🌿 Your Plants")
 
-# Assuming plant data is available in the backend. For now, using hardcoded example.
 plants = [
     {"id": 1, "name": "Plant A", "moisture_threshold": 500, "avatar": "🌵"},
     {"id": 2, "name": "Plant B", "moisture_threshold": 600, "avatar": "🌻"},
@@ -39,7 +38,6 @@ for plant in plants:
     st.subheader(f"{plant['avatar']} {plant['name']}")
     st.write(f"Moisture Threshold: {plant['moisture_threshold']}")
 
-    # View latest sensor data for each plant
     st.write("📊 Latest Sensor Data")
     try:
         response = requests.get(f"http://localhost:8000/api/sensordata/{plant['id']}")
@@ -51,15 +49,15 @@ for plant in plants:
         st.error("🚫 Could not fetch sensor data.")
         st.code(str(e))
 
-    # Prediction buttons for each plant
+    # Prediction buttons
     if st.button(f"Get Predictions for {plant['name']}"):
         try:
             moisture_duration_pred = requests.get(f"http://localhost:8000/api/predict_moisture_duration/{plant['id']}").json()
-            st.write(f"⏳ Predicted Moisture Duration: {moisture_duration_pred['predicted_moisture_duration']} hrs")
-            
             soil_wellbeing_pred = requests.get(f"http://localhost:8000/api/predict_soil_wellbeing/{plant['id']}").json()
+
+            # ✅ Use correct keys
+            st.write(f"⏳ Predicted Moisture Duration: {moisture_duration_pred['predicted_moisture_duration_hrs']} hrs")
             st.write(f"🌱 Predicted Soil Wellbeing Index: {soil_wellbeing_pred['predicted_soil_wellbeing_index']}")
         except Exception as e:
-            st.error("🤖 Prediction models not connected yet.")
+            st.error("🤖 Prediction models not connected or response malformed.")
             st.code(str(e))
-
